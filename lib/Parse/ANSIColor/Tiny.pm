@@ -150,4 +150,31 @@ sub parse {
 
 =head1 DESCRIPTION
 
+Parse a string colored with ANSI escape sequences
+into a structure suitable for reformatting (into html, for example).
+
+The output of terminal commands can be marked up with colors and formatting
+that in some instances you'd like to preserve.
+
+This module is essentially the inverse of L<Term::ANSIColor>.
+The array refs returned from L</parse>
+can be passed back in to L<Term::ANSIColor/colored>.
+The strings may not match exactly due to different ways the attributes can be specified,
+but the end result should be colored the same.
+
+This is a C<::Tiny> module...
+it attempts to be correct for most cases with a small amount of code.
+It may not be 100% correct, especially in complex cases.
+It only handles the C<m> escape sequence (C<\033[0m>)
+which produces colors and simple attributes (bold, underline)
+(like what can be produced with L<Term::ANSIColor>).
+
+If you do find bugs please submit tickets (with patches, if possible).
+
+=head1 SEE ALSO
+
+=for :list
+* L<Term::ANSIColor> - For marking up text that will be printed to the terminal
+* L<HTML::FromANSI> - Specific to (old) html; As of 2.03 (released in 2007) tags are not customizable.  Uses L<Term::VT102> which is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
+
 =cut
