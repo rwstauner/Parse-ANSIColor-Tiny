@@ -87,7 +87,32 @@ sub parse {
 
 1;
 
+# NOTE: this synopsis is tested (eval'ed) in t/synopsis.t
+
 =head1 SYNOPSIS
+
+  # output from some command
+  my $output = "foo\e[31mbar\e[00m";
+
+  my $ansi = Parse::ANSIColor::Tiny->new();
+  my $marked = $ansi->parse($output);
+
+  is_deeply
+    $marked,
+    [
+      [ [], 'foo' ],
+      [ ['red'], 'bar' ],
+    ],
+    'parse colored string';
+
+  my $html = join '',
+    '<div>',
+    (map { '<span class="' . join(' ', @{ $_->[0] }) . '">' . $_->[1] . '</span>' } @$marked),
+    '</div>';
+
+  is $html,
+    '<div><span class="">foo</span><span class="red">bar</span></div>',
+    'turned simple ansi into html';
 
 =head1 DESCRIPTION
 
