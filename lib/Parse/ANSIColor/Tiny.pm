@@ -45,6 +45,7 @@ sub new {
   bless $self, $class;
 }
 
+# this is similar to Term::ANSIColor::uncolor
 sub names {
   my $self = shift;
   return grep { defined } map { $ATTRIBUTES_R{ 0 + $_ } } @_;
@@ -93,10 +94,13 @@ sub parse {
 
     my $cur_pos = pos($orig);
 
+    my $len = ($cur_pos - length($seq)) - $last_pos;
     push @$parsed, [
       $last_attr,
-      substr($orig, $last_pos, ($cur_pos - length($seq)) - $last_pos)
-    ];
+      substr($orig, $last_pos, $len)
+    ]
+      # don't bother with empty strings
+      if $len;
 
     $last_pos = $cur_pos;
     $last_attr = [$self->normalize(@$last_attr, $self->names(@attr))];
