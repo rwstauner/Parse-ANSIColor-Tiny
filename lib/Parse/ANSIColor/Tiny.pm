@@ -39,6 +39,28 @@ sub new {
   bless $self, $class;
 }
 
+sub names {
+  my $self = shift;
+  return grep { defined } map { $ATTRIBUTES_R{ 0 + $_ } } @_;
+}
+
+sub normalize {
+  my $self = shift;
+  my @norm;
+  foreach my $attr ( @_ ){
+    if( $attr eq 'clear' ){
+      @norm = ();
+    }
+    else {
+      # remove previous (duplicate) occurrences of this attribute
+      # TODO: fg overwrites fg, bg over bg, etc
+      @norm = grep { $_ ne $attr } @norm;
+      push @norm, $attr;
+    }
+  }
+  return @norm;
+}
+
 sub parse {
   my ($self, $orig) = @_;
 
@@ -55,7 +77,7 @@ sub parse {
     # TODO: make this an option
     #$str =~ s/[^[:print:]]//g;
 
-    my @attr = map { 0 + $_ } split /;/, $attrs;
+    my @attr = split /;/, $attrs;
 
     # TODO: inherit previous attributes
     # TODO: normalize attributes (red green) => green
@@ -68,9 +90,7 @@ sub parse {
     ];
 
     $last_pos = $cur_pos;
-    $last_attr = [map { $ATTRIBUTES_R{ $_ } } @attr];
-    # if the last entry is clear/reset that's as good as no attributes
-    $last_attr = [] if $last_attr->[-1] eq 'clear';
+    $last_attr = [$self->normalize(@$last_attr, $self->names(@attr))];
   }
 
     push @$parsed, [
@@ -84,6 +104,7 @@ sub parse {
 }
 
 # TODO: exportable parse_ansi that generates a new instance
+# TODO: option for blotting out 'concealed'? s/\S/ /g
 
 1;
 
