@@ -7,6 +7,14 @@ package Parse::ANSIColor::Tiny;
 
 # is it safe to use %Term::ANSIColor::ATTRIBUTES (_R) ?
 our @COLORS = qw( black red green yellow blue magenta cyan white );
+our %FOREGROUND = (
+  (map { (               $COLORS[$_] =>  30 + $_ ) } 0 .. $#COLORS),
+  (map { (   'bright_' . $COLORS[$_] =>  90 + $_ ) } 0 .. $#COLORS),
+);
+our %BACKGROUND = (
+  (map { (       'on_' . $COLORS[$_] =>  40 + $_ ) } 0 .. $#COLORS),
+  (map { ('on_bright_' . $COLORS[$_] => 100 + $_ ) } 0 .. $#COLORS),
+);
 our %ATTRIBUTES = (
   clear          => 0,
   reset          => 0,
@@ -18,10 +26,8 @@ our %ATTRIBUTES = (
   blink          => 5,
   reverse        => 7,
   concealed      => 8,
-  (map { (               $COLORS[$_] =>  30 + $_ ) } 0 .. $#COLORS),
-  (map { (       'on_' . $COLORS[$_] =>  40 + $_ ) } 0 .. $#COLORS),
-  (map { (   'bright_' . $COLORS[$_] =>  90 + $_ ) } 0 .. $#COLORS),
-  (map { ('on_bright_' . $COLORS[$_] => 100 + $_ ) } 0 .. $#COLORS),
+  %FOREGROUND,
+  %BACKGROUND,
 );
 
 # copied from Term::ANSIColor
@@ -53,8 +59,11 @@ sub normalize {
     }
     else {
       # remove previous (duplicate) occurrences of this attribute
-      # TODO: fg overwrites fg, bg over bg, etc
       @norm = grep { $_ ne $attr } @norm;
+      # new fg color overwrites previous fg
+      @norm = grep { !exists $FOREGROUND{$_} } @norm if exists $FOREGROUND{$attr};
+      # new bg color overwrites previous bg
+      @norm = grep { !exists $BACKGROUND{$_} } @norm if exists $BACKGROUND{$attr};
       push @norm, $attr;
     }
   }

@@ -16,6 +16,13 @@ eq_or_diff
   ],
   'parsed simple color';
 
-# TODO: test inheritance
+eq_or_diff
+  $p->parse("foo\033[01;31mbar\033[33mbaz\033[00m"),
+  [
+    [ [                ], 'foo' ],
+    [ ['bold', 'red'   ], 'bar' ],
+    [ ['bold', 'yellow'], 'baz' ],
+  ],
+  'bold attribute inherited';
 
 done_testing;
