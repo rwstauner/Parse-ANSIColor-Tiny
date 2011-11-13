@@ -25,4 +25,21 @@ eq_or_diff
   ],
   'bold attribute inherited';
 
+eq_or_diff
+  $p->parse(<<OUTPUT),
+I've got a \e[01;33mlovely \e[32mbunch\033[0m of coconuts.
+I want to be \033[34ma \e[4mmighty \e[45mpirate\e[0m.
+OUTPUT
+  [
+    [ [], "I\'ve got a " ],
+    [ ['bold', 'yellow'], 'lovely ' ],
+    [ ['bold', 'green'], 'bunch'],
+    [ [], " of coconuts.\nI want to be " ],
+    [ ['blue'], 'a ' ],
+    [ ['blue', 'underline'], 'mighty ' ],
+    [ ['blue', 'underline', 'on_magenta'], 'pirate' ],
+    [ [], ".\n" ],
+  ],
+  'parsed output';
+
 done_testing;
