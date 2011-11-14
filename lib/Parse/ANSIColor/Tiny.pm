@@ -256,7 +256,7 @@ sub h { shift };
 =head1 DESCRIPTION
 
 Parse a string colored with ANSI escape sequences
-into a structure suitable for reformatting (into html, for example).
+into a structure suitable for reformatting (into HTML, for example).
 
 The output of terminal commands can be marked up with colors and formatting
 that in some instances you'd like to preserve.
@@ -280,6 +280,6 @@ If you do find bugs please submit tickets (with patches, if possible).
 
 =for :list
 * L<Term::ANSIColor> - For marking up text that will be printed to the terminal
-* L<HTML::FromANSI> - Specific to (old) html; As of 2.03 (released in 2007) tags are not customizable.  Uses L<Term::VT102> which is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
+* L<HTML::FromANSI> - Specific to (old) HTML; As of 2.03 (released in 2007) tags are not customizable.  Uses L<Term::VT102> which is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
 
 =cut
