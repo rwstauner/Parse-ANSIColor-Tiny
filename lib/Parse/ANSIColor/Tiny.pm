@@ -198,7 +198,7 @@ Everything listed in L</FUNCTIONS> is also available for export upon request.
 
 our @EXPORT_OK;
 BEGIN {
-  eval join '',
+  eval join '', ## no critic (StringyEval)
     map { "sub ${_}_ansicolor { __PACKAGE__->new->$_(\@_) }" }
     @EXPORT_OK = qw(identify normalize parse);
 }
@@ -208,7 +208,7 @@ sub import {
   return unless @_;
 
   my $caller = caller;
-  no strict 'refs';
+  no strict 'refs'; ## no critic (NoStrict)
 
   foreach my $arg ( @_ ){
     die "'$arg' is not exported by $class"
