@@ -198,9 +198,12 @@ Everything listed in L</FUNCTIONS> is also available for export upon request.
 
 our @EXPORT_OK;
 BEGIN {
+  my @funcs = qw(identify normalize parse);
+  my $suffix = '_ansicolor';
   eval join '', ## no critic (StringyEval)
-    map { "sub ${_}_ansicolor { __PACKAGE__->new->$_(\@_) }" }
-    @EXPORT_OK = qw(identify normalize parse);
+    map { "sub ${_}$suffix { __PACKAGE__->new->$_(\@_) }" }
+    @funcs;
+  @EXPORT_OK = map { $_ . $suffix } @funcs;
 }
 
 sub import {
@@ -212,8 +215,8 @@ sub import {
 
   foreach my $arg ( @_ ){
     die "'$arg' is not exported by $class"
-      unless my $func = *{"${class}::$arg"}{CODE};
-    *{"${caller}::$arg"} = $func;
+      unless grep { $arg eq $_ } @EXPORT_OK;
+    *{"${caller}::$arg"} = *{"${class}::$arg"}{CODE};
   }
 }
 

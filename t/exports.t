@@ -24,4 +24,8 @@ eq_or_diff
   ],
   'identify_ansicolor exported and working';
 
+my $mod = 'Parse::ANSIColor::Tiny';
+is eval qq{ use $mod 'identify'; 1; }, undef, 'eval died for bad export';
+like $@, qr/'identify' is not exported by $mod/, 'error message mentions bad export';
+
 done_testing;
