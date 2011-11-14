@@ -178,7 +178,45 @@ sub parse {
   return $parsed;
 }
 
-# TODO: exportable parse_ansi that generates a new instance
+=func identify_ansicolor
+
+Function wrapped around L</identify>.
+
+=func normalize_ansicolor
+
+Function wrapped around L</normalize>.
+
+=func parse_ansicolor
+
+Function wrapped around L</parse>.
+
+=head1 EXPORTS
+
+Everything listed in L</FUNCTIONS> is also available for export upon request.
+
+=cut
+
+our @EXPORT_OK;
+BEGIN {
+  eval join '',
+    map { "sub ${_}_ansicolor { __PACKAGE__->new->$_(\@_) }" }
+    @EXPORT_OK = qw(identify normalize parse);
+}
+
+sub import {
+  my $class = shift;
+  return unless @_;
+
+  my $caller = caller;
+  no strict 'refs';
+
+  foreach my $arg ( @_ ){
+    die "'$arg' is not exported by $class"
+      unless my $func = *{"${class}::$arg"}{CODE};
+    *{"${caller}::$arg"} = $func;
+  }
+}
+
 # TODO: option for blotting out 'concealed'? s/\S/ /g
 # TODO: HTML::FromANSI::Tiny ?  like synopsis, options for tag_name, attr_name, or style_attr?
 
