@@ -62,7 +62,7 @@ sub new {
 Identifies attributes by their number;
 Returns a B<list> of names.
 
-This is similar to L<Term::ANSIColor/uncolor>.
+This is similar to C<uncolor()> in L<Term::ANSIColor>.
 
 Unknown codes will be ignored (remove from the output):
 
@@ -132,9 +132,9 @@ and return an array ref of array refs describing the formatting:
   # [
 
 These array refs are consistent with the arguments to
-L<Term::ANSIColor/colored>:
+C<colored()> in L<Term::ANSIColor>:
 
-  colored( ['red'], 'colored words' );
+  Term::ANSIColor::colored( ['red'], 'colored words' );
 
 =cut
 
@@ -263,7 +263,7 @@ that in some instances you'd like to preserve.
 
 This module is essentially the inverse of L<Term::ANSIColor>.
 The array refs returned from L</parse>
-can be passed back in to L<Term::ANSIColor/colored>.
+can be passed back in to C<Term::ANSIColor::colored>.
 The strings may not match exactly due to different ways the attributes can be specified,
 but the end result should be colored the same.
 
