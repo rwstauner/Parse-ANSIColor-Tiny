@@ -89,9 +89,6 @@ sub parse {
 
     my @attr = split /;/, $attrs;
 
-    # TODO: inherit previous attributes
-    # TODO: normalize attributes (red green) => green
-
     my $cur_pos = pos($orig);
 
     my $len = ($cur_pos - length($seq)) - $last_pos;
@@ -118,6 +115,7 @@ sub parse {
 
 # TODO: exportable parse_ansi that generates a new instance
 # TODO: option for blotting out 'concealed'? s/\S/ /g
+# TODO: HTML::FromANSI::Tiny ?  like synopsis, options for tag_name, attr_name, or style_attr?
 
 1;
 
