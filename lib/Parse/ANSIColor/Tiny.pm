@@ -90,7 +90,7 @@ and reduces the list to only those that would have effect.
 
 =for :list
 * Duplicates will be removed
-* a foreground color will overwrite any previous foreground color (and the previous ones wil be removed)
+* a foreground color will overwrite any previous foreground color (and the previous ones will be removed)
 * same for background colors
 * C<clear> will remove all previous attributes
 
