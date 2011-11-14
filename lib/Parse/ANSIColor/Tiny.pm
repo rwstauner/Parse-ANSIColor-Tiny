@@ -5,7 +5,6 @@ use warnings;
 package Parse::ANSIColor::Tiny;
 # ABSTRACT: Determine attributes of ANSI-Colored string
 
-# is it safe to use %Term::ANSIColor::ATTRIBUTES (_R) ?
 our @COLORS = qw( black red green yellow blue magenta cyan white );
 our %FOREGROUND = (
   (map { (               $COLORS[$_] =>  30 + $_ ) } 0 .. $#COLORS),
@@ -37,6 +36,15 @@ our %ATTRIBUTES = (
       $ATTRIBUTES_R{$ATTRIBUTES{$_}} = $_;
   }
 
+=method new
+
+Constructor.
+
+Takes a hash or hash ref of arguments
+though currently no options are defined :-)
+
+=cut
+
 sub new {
   my $class = shift;
   my $self = {
@@ -45,11 +53,46 @@ sub new {
   bless $self, $class;
 }
 
-# this is similar to Term::ANSIColor::uncolor
+=method identify
+
+  my @names = $parser->identify('1;31');
+  # returns ('bold', 'red')
+
+Identifies attributes by their number;
+Returns a B<list> of names.
+
+This is similar to L<Term::ANSIColor/uncolor>.
+
+Unknown codes will be ignored (remove from the output):
+
+  $parser->identify('33', '52');
+  # returns ('yellow') # drops the '52'
+
+=cut
+
 sub identify {
   my $self = shift;
   return grep { defined } map { $ATTRIBUTES_R{ 0 + $_ } } @_;
 }
+
+=method normalize
+
+  my @norm = $parser->normalize(@attributes);
+
+Takes a list of named attributes
+(like those returned from L</identify>)
+and reduces the list to only those that would have effect.
+
+=for :list
+* Duplicates will be removed
+* a foreground color will overwrite any previous foreground color (and the previous ones wil be removed)
+* same for background colors
+* C<clear> will remove all previous attributes
+
+  my @norm = $parser->normalize(qw(red bold green));
+  # returns ('bold', 'green');
+
+=cut
 
 sub normalize {
   my $self = shift;
@@ -70,6 +113,25 @@ sub normalize {
   }
   return @norm;
 }
+
+=method parse
+
+  my $marked = $parser->parse($output);
+
+Parse the provided string
+and return an array ref of array refs describing the formatting:
+
+  # [
+  #   [ [], 'plain words' ],
+  #   [ ['red'], 'colored words' ],
+  # [
+
+These array refs are consistent with the arguments to
+L<Term::ANSIColor/colored>:
+
+  colored( ['red'], 'colored words' );
+
+=cut
 
 sub parse {
   my ($self, $orig) = @_;
@@ -137,6 +199,7 @@ sub parse {
     ],
     'parse colored string';
 
+  # don't forget to encode the html!
   my $html = join '',
     '<div>',
     (map { '<span class="' . join(' ', @{ $_->[0] }) . '">' . $_->[1] . '</span>' } @$marked),
