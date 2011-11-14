@@ -19,9 +19,7 @@ OUTPUT
 
 my $parsed = $p->parse($text);
 
-eq_or_diff
-  $parsed,
-  [
+my $exp = [
     [ [], "I\'ve got a " ],
     [ ['bold', 'yellow'], 'lovely ' ],
     [ ['bold', 'green'], 'bunch'],
@@ -30,7 +28,11 @@ eq_or_diff
     [ ['blue', 'underline'], 'mighty ' ],
     [ ['blue', 'underline', 'on_magenta'], 'pirate' ],
     [ [], ".\n" ],
-  ],
+  ];
+
+eq_or_diff
+  $parsed,
+  $exp,
   'parsed output';
 
 my $colored = join('', map { Term::ANSIColor::colored(@$_) } @$parsed);
@@ -41,5 +43,17 @@ eq_or_diff
   $colored,
   $text,
   'round-trip through Term::ANSIColor produced identical output';
+
+eq_or_diff
+  $p->parse($colored),
+  $exp,
+  'parsed the output of colored() and got the same';
+
+eq_or_diff
+  $p->parse( Term::ANSIColor::colored( [qw(bold blue underline)], 'bbu' ) ),
+  [
+    [ [qw(bold blue underline)], 'bbu' ],
+  ],
+  'parse return of simple colored() call';
 
 done_testing;
