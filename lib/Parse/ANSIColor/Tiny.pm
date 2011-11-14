@@ -56,6 +56,7 @@ sub new {
 =method identify
 
   my @names = $parser->identify('1;31');
+    # or $parser->identify('1', '31');
   # returns ('bold', 'red')
 
 Identifies attributes by their number;
@@ -72,7 +73,11 @@ Unknown codes will be ignored (remove from the output):
 
 sub identify {
   my $self = shift;
-  return grep { defined } map { $ATTRIBUTES_R{ 0 + $_ } } @_;
+  return
+    grep { defined }
+    map  { $ATTRIBUTES_R{ 0 + $_ } }
+    map  { split /;/ }
+    @_;
 }
 
 =method normalize
@@ -149,8 +154,6 @@ sub parse {
     # TODO: make this an option
     #$str =~ s/[^[:print:]]//g;
 
-    my @attr = split /;/, $attrs;
-
     my $cur_pos = pos($orig);
 
     my $len = ($cur_pos - length($seq)) - $last_pos;
@@ -162,7 +165,7 @@ sub parse {
       if $len;
 
     $last_pos = $cur_pos;
-    $last_attr = [$self->normalize(@$last_attr, $self->identify(@attr))];
+    $last_attr = [$self->normalize(@$last_attr, $self->identify($attrs))];
   }
 
     push @$parsed, [
