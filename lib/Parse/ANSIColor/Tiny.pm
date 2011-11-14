@@ -224,6 +224,9 @@ sub import {
 
 # NOTE: this synopsis is tested (eval'ed) in t/synopsis.t
 
+=for test_synopsis
+sub h { shift };
+
 =head1 SYNOPSIS
 
   # output from some command
@@ -240,10 +243,10 @@ sub import {
     ],
     'parse colored string';
 
-  # don't forget to encode the html!
+  # don't forget to html-encode the string!
   my $html = join '',
     '<div>',
-    (map { '<span class="' . join(' ', @{ $_->[0] }) . '">' . $_->[1] . '</span>' } @$marked),
+    (map { '<span class="' . join(' ', @{ $_->[0] }) . '">' . h($_->[1]) . '</span>' } @$marked),
     '</div>';
 
   is $html,

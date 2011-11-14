@@ -14,14 +14,14 @@ use File::Spec (); # core
   my $in_synopsis = 0;
   my $pod = '';
   while( <$fh> ){
-    if( $in_synopsis && /^=\w+/ ){
+    if( /^=(for test_synopsis|head1 SYNOPSIS)/ ){
+      $in_synopsis = 1;
+    }
+    elsif( $in_synopsis && /^=\w+/ ){
       last;
     }
     elsif( $in_synopsis ){
       $pod .= $_;
-    }
-    elsif( /^=head1 SYNOPSIS/ ){
-      $in_synopsis = 1;
     }
   }
 
