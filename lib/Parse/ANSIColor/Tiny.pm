@@ -73,6 +73,7 @@ Unknown codes will be ignored (remove from the output):
 
 sub identify {
   my $self = shift;
+  local $_;
   return
     grep { defined }
     map  { $ATTRIBUTES_R{ 0 + $_ } }
@@ -200,6 +201,7 @@ our @EXPORT_OK;
 BEGIN {
   my @funcs = qw(identify normalize parse);
   my $suffix = '_ansicolor';
+  local $_;
   eval join '', ## no critic (StringyEval)
     map { "sub ${_}$suffix { __PACKAGE__->new->$_(\@_) }" }
     @funcs;

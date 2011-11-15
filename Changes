@@ -3,6 +3,7 @@ Revision history for Parse-ANSIColor-Tiny
 {{$NEXT}}
 
   - Limit exports to @EXPORT_OK rather than any sub
+  - Localize $_ before using map
 
 0.302     2011-11-14T18:34:58Z
 
