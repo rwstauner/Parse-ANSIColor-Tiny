@@ -2,6 +2,7 @@ Revision history for Parse-ANSIColor-Tiny
 
 {{$NEXT}}
 
+  - Add colors(), foreground_colors(), and background_colors()
   - Limit exports to @EXPORT_OK rather than any sub
   - Localize $_ before using map
 

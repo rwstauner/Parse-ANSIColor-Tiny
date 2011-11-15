@@ -53,6 +53,34 @@ sub new {
   bless $self, $class;
 }
 
+=method colors
+
+Returns a list of the base color names (in numeric escape sequence order).
+
+=method foreground_colors
+
+Returns a list of the foreground colors (in numeric escape sequence order).
+
+This includes the base colors and the C<bright_> variants.
+
+=method background_colors
+
+Returns a list of the background colors (in numeric escape sequence order).
+
+This includes the C<on_> and C<on_bright_> variants of the base colors.
+
+=cut
+
+sub colors {
+  return @COLORS;
+}
+sub foreground_colors {
+  return (@COLORS, map { "bright_$_" } @COLORS);
+}
+sub background_colors {
+  return ( (map { "on_$_" } @COLORS), (map { "on_bright_$_" } @COLORS) );
+}
+
 =method identify
 
   my @names = $parser->identify('1;31');
