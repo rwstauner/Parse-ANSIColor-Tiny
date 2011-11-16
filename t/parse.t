@@ -42,4 +42,15 @@ OUTPUT
   ],
   'parsed output';
 
+eq_or_diff
+  $p->parse("foo\033[31mbar\033[mbaz\033[32mqu\e[42;mx"),
+  [
+    [ [       ], 'foo' ],
+    [ ['red'  ], 'bar' ],
+    [ [       ], 'baz' ],
+    [ ['green'], 'qu' ],
+    [ [       ], 'x' ],
+  ],
+  'no numbers at all means zero/clear';
+
 done_testing;

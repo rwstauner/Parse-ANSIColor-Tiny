@@ -2,7 +2,11 @@ Revision history for Parse-ANSIColor-Tiny
 
 {{$NEXT}}
 
+  [Enhancements]
   - Add colors(), foreground_colors(), and background_colors()
+
+  [Fixes]
+  - Treat empty sequences as 0 (clear)
   - Limit exports to @EXPORT_OK rather than any sub
   - Localize $_ before using map
 

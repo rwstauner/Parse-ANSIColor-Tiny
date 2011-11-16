@@ -100,13 +100,17 @@ Unknown codes will be ignored (remove from the output):
 =cut
 
 sub identify {
-  my $self = shift;
+  my ($self, @codes) = @_;
   local $_;
   return
     grep { defined }
-    map  { $ATTRIBUTES_R{ 0 + $_ } }
+    map  { $ATTRIBUTES_R{ 0 + ($_ || 0) } }
     map  { split /;/ }
-    @_;
+    # empty sequence is the same as clear so don't let split throw out empty ends
+    map  { m/;$/ ? $_ . '0' : $_ }
+    # prepending zero doesn't hurt and is probably better than s/^;/0;/
+    map  { '0' . ($_ || '0')  }
+    @codes;
 }
 
 =method normalize
@@ -174,7 +178,7 @@ sub parse {
   my $last_attr = [];
   my $parsed = [];
 
-  while( my $matched = $orig =~ m/(\e\[([0-9;]+)m)/mg ){
+  while( my $matched = $orig =~ m/(\e\[([0-9;]*)m)/mg ){
     my $seq = $1;
     my $attrs = $2;
 
