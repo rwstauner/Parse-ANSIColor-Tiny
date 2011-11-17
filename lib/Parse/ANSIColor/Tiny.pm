@@ -322,6 +322,8 @@ If you do find bugs please submit tickets (with patches, if possible).
 
 =for :list
 * L<Term::ANSIColor> - For marking up text that will be printed to the terminal
-* L<HTML::FromANSI> - Specific to (old) HTML; As of 2.03 (released in 2007) tags are not customizable.  Uses L<Term::VT102> which is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
+* L<Image::TextMode> (and L<Image::TextMode::Format::ANSI>) - Succesor to L<Image::ANSI>; Specifically designed for parsing ANSI art
+* L<Term::VT102> - Handles more than colors and is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
+* L<HTML::FromANSI::Tiny> - Uses this module to translate ANSI colored text to simple HTML
 
 =cut
