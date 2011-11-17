@@ -25,6 +25,7 @@ our %ATTRIBUTES = (
   blink          => 5,
   reverse        => 7,
   concealed      => 8,
+  reverse_off    => 27,
   %FOREGROUND,
   %BACKGROUND,
 );
@@ -138,6 +139,10 @@ sub normalize {
   foreach my $attr ( @_ ){
     if( $attr eq 'clear' ){
       @norm = ();
+    }
+    elsif( $attr eq 'reverse_off' ){
+      # reverse_off cancels reverse
+      @norm = grep { $_ ne 'reverse' } @norm;
     }
     else {
       # remove previous (duplicate) occurrences of this attribute
