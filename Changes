@@ -3,6 +3,7 @@ Revision history for Parse-ANSIColor-Tiny
 {{$NEXT}}
 
   [Enhancements]
+  - Add 'auto_reverse' option
   - Add colors(), foreground_colors(), and background_colors()
 
   [Fixes]

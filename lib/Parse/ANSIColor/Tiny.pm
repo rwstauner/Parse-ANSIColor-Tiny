@@ -41,8 +41,12 @@ our %ATTRIBUTES = (
 
 Constructor.
 
-Takes a hash or hash ref of arguments
-though currently no options are defined :-)
+Takes a hash or hash ref of arguments:
+
+=for :list
+* C<auto_reverse> - Automatically invert colors when C<reverse> is present; Disabled by default.
+* C<background> - Color to assume as background; Black by default. Currently used by L</process_reverse>.
+* C<foreground> - Color to assume as foreground; White by default. Currently used by L</process_reverse>.
 
 =cut
 
@@ -51,6 +55,9 @@ sub new {
   my $self = {
     @_ == 1 ? %{ $_[0] } : @_,
   };
+
+  $self->{process} = 1
+    if $self->{auto_reverse};
 
   # fix incorrectly specified attributes
   ($self->{background} ||= 'black') =~ s/^(on_)*/on_/;
@@ -186,6 +193,7 @@ sub parse {
 
   my $last_pos = 0;
   my $last_attr = [];
+  my $processed = [];
   my $parsed = [];
 
   while( my $matched = $orig =~ m/(\e\[([0-9;]*)m)/mg ){
@@ -201,7 +209,7 @@ sub parse {
 
     my $len = ($cur_pos - length($seq)) - $last_pos;
     push @$parsed, [
-      $last_attr,
+      $processed,
       substr($orig, $last_pos, $len)
     ]
       # don't bother with empty strings
@@ -209,16 +217,103 @@ sub parse {
 
     $last_pos = $cur_pos;
     $last_attr = [$self->normalize(@$last_attr, $self->identify($attrs))];
+    $processed = $self->{process} ? [$self->process(@$last_attr)] : $last_attr;
   }
 
     push @$parsed, [
-      $last_attr,
+      $processed,
       substr($orig, $last_pos)
     ]
       # if there's any string left
       if $last_pos < length($orig);
 
   return $parsed;
+}
+
+=method process
+
+Performs post-processing on the provided attributes.
+
+This currently includes L</proces_reverse>
+if C<auto_reverse> is enabled.
+
+=cut
+
+sub process {
+  my ($self, @attr) = @_;
+  @attr = $self->process_reverse(@attr) if $self->{auto_reverse};
+  return @attr;
+}
+
+=method process_reverse
+
+  my @attr = $parser->process_reverse( $parser->normalize( '31;42;7' ) );
+
+Translates a normalized set of attributes into something easier to process.
+This is called internally when C<auto_reverse> is configured.
+
+If C<reverse> is included in the attributes
+it should invert the foreground and background colors.
+
+This method makes the attributes more straight forward
+and likely easier for other things to process:
+
+  my @norm = $parser->normalize( '1;31;42;7' );
+  # returns qw( bold red on_green reverse );
+
+  my @attr = $parser->process_reverse( @norm );
+  # returns qw( bold on_red green );
+
+This extra step is necessary to maintain state
+and properly handle C<reverse>/C<reverse_off>
+since two C<reverse>s do not cancel each other,
+but rather the second should be ignored.
+
+If no foreground or background color is currently active
+then the colors specified as C<foreground> and C<background>
+will be included (and reversed).
+
+  my @attr = $parser->process_reverse( qw( bold reverse ) );
+  # returns qw( bold on_white black );
+
+  my @attr = $parser->process_reverse( qw( bold reverse red ) );
+  # returns qw( bold on_red   black );
+
+This is consistent with the way it is drawn in the terminal.
+Explicitly specifying both colors should make it easy
+for anything downstream to process and display as intended.
+
+=cut
+
+sub process_reverse {
+  my $self = shift;
+  my ($rev, $fg, $bg, @attr);
+  my $i = 0;
+  foreach my $attr ( @_ ){
+    if( $attr eq 'reverse' ){
+      $rev = 1;
+      next;
+    }
+    elsif( $FOREGROUND{ $attr } ){
+      $fg = $i;
+    }
+    elsif( $BACKGROUND{ $attr } ){
+      $bg = $i;
+    }
+    push @attr, $attr;
+    $i++;
+  }
+  # maintain order for consistency with other methods
+  if( $rev ){
+    # if either color is missing then the default colors should be reversed
+    {
+      $attr[ $fg = $i++ ] = $self->{foreground} if !defined $fg;
+      $attr[ $bg = $i++ ] = $self->{background} if !defined $bg;
+    }
+    $attr[ $fg ] = 'on_' . $attr[ $fg ]      if defined $fg;
+    $attr[ $bg ] = substr( $attr[ $bg ], 3 ) if defined $bg;
+  }
+  return @attr;
 }
 
 =func identify_ansicolor
