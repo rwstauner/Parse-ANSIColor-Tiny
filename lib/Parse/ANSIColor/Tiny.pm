@@ -360,7 +360,6 @@ sub import {
 }
 
 # TODO: option for blotting out 'concealed'? s/\S/ /g
-# TODO: HTML::FromANSI::Tiny ?  like synopsis, options for tag_name, attr_name, or style_attr?
 
 1;
 
