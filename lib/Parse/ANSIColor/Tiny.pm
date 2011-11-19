@@ -51,6 +51,11 @@ sub new {
   my $self = {
     @_ == 1 ? %{ $_[0] } : @_,
   };
+
+  # fix incorrectly specified attributes
+  ($self->{background} ||= 'black') =~ s/^(on_)*/on_/;
+  ($self->{foreground} ||= 'white') =~ s/^(on_)*//;
+
   bless $self, $class;
 }
 
