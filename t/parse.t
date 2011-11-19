@@ -55,4 +55,24 @@ eq_or_diff
   ],
   'no numbers at all means zero/clear';
 
+my $rev_then_blank = e "foo\033[01;31mbar\033[07m\033[32mbaz\033[00m";
+
+eq_or_diff
+  $p->parse($rev_then_blank),
+  [
+    [ [                 ], 'foo' ],
+    [ [qw(bold red)     ], 'bar' ],
+    [ [qw(bold reverse green)], 'baz' ],
+  ],
+  '"reverse" sequence carried across empty string';
+
+eq_or_diff
+  new_ok($mod, [auto_reverse => 1])->parse($rev_then_blank),
+  [
+    [ [                       ], 'foo' ],
+    [ [qw(bold red           )], 'bar' ],
+    [ [qw(bold on_green black)], 'baz' ],
+  ],
+  '"reverse" sequence carried across empty string with auto_reverse';
+
 done_testing;
