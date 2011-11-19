@@ -6,10 +6,12 @@ use Test::Differences;
 my $mod = 'Parse::ANSIColor::Tiny';
 eval "require $mod" or die $@;
 
+sub e { note $_[0]; $_[0] }
+
 my $p = new_ok($mod);
 
 eq_or_diff
-  $p->parse("foo\033[31mbar\033[00m"),
+  $p->parse(e "foo\033[31mbar\033[00m"),
   [
     [ [     ], 'foo' ],
     [ ['red'], 'bar' ],
@@ -17,7 +19,7 @@ eq_or_diff
   'parsed simple color';
 
 eq_or_diff
-  $p->parse("foo\033[01;31mbar\033[33mbaz\033[00m"),
+  $p->parse(e "foo\033[01;31mbar\033[33mbaz\033[00m"),
   [
     [ [                ], 'foo' ],
     [ ['bold', 'red'   ], 'bar' ],
@@ -26,7 +28,7 @@ eq_or_diff
   'bold attribute inherited';
 
 eq_or_diff
-  $p->parse(<<OUTPUT),
+  $p->parse(e <<OUTPUT),
 I've got a \e[01;33mlovely \e[32mbunch\033[0m of coconuts.
 I want to be \033[34ma \e[4mmighty \e[45mpirate\e[0m.
 OUTPUT
@@ -43,7 +45,7 @@ OUTPUT
   'parsed output';
 
 eq_or_diff
-  $p->parse("foo\033[31mbar\033[mbaz\033[32mqu\e[42;mx"),
+  $p->parse(e "foo\033[31mbar\033[mbaz\033[32mqu\e[42;mx"),
   [
     [ [       ], 'foo' ],
     [ ['red'  ], 'bar' ],

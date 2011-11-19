@@ -18,6 +18,7 @@ is o b cyan, 'on_bright_cyan', 'shortcuts work together';
 my $p = new_ok('Parse::ANSIColor::Tiny');
 
 my $chart = do { local $/; <DATA>; };
+note $chart;
 
 eq_or_diff $p->parse($chart), [
 [[],   " 0\t"], [[         ], '  0 '],  [[             ], '  0 '],  [[], "\t\t 1\t"], [[bo         ], '  1 '],  [[bo             ], '  1 '],
