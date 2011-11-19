@@ -2,6 +2,8 @@ Revision history for Parse-ANSIColor-Tiny
 
 {{$NEXT}}
 
+0.400     2011-11-19T18:11:12Z
+
   [Enhancements]
   - Add 'auto_reverse' option
   - Add colors(), foreground_colors(), and background_colors()
@@ -10,6 +12,8 @@ Revision history for Parse-ANSIColor-Tiny
   - Treat empty sequences as 0 (clear)
   - Limit exports to @EXPORT_OK rather than any sub
   - Localize $_ before using map
+  - Turn reverse off with esc code 27
+  - More tests
 
 0.302     2011-11-14T18:34:58Z
 
