@@ -49,12 +49,14 @@ Takes a hash or hash ref of arguments:
 * C<auto_reverse> - Automatically invert colors when C<reverse> is present; Disabled by default.
 * C<background> - Color to assume as background; Black by default. Currently used by L</process_reverse>.
 * C<foreground> - Color to assume as foreground; White by default. Currently used by L</process_reverse>.
+* C<remove_escapes> - Remove other terminal escape sequences (not related to color).  Passes strings through L</remove_escape_sequences> before parsing.
 
 =cut
 
 sub new {
   my $class = shift;
   my $self = {
+    remove_escapes => 1,
     @_ == 1 ? %{ $_[0] } : @_,
   };
 
@@ -204,14 +206,13 @@ sub parse {
   my $processed = [];
   my $parsed = [];
 
-  while( my $matched = $orig =~ m/(\e\[([0-9;]*)m)/mg ){
+  # Strip escape sequences that we aren't going to use
+  $orig = $self->remove_escape_sequences($orig)
+    if $self->{remove_escapes};
+
+  while( $orig =~ m/(\e\[([0-9;]*)m)/mg ){
     my $seq = $1;
     my $attrs = $2;
-
-    # strip out any escape sequences that aren't colors
-    # TODO: unicode flags?
-    # TODO: make this an option
-    #$str =~ s/[^[:print:]]//g;
 
     my $cur_pos = pos($orig);
 
@@ -324,6 +325,31 @@ sub process_reverse {
   return @attr;
 }
 
+=method remove_escape_sequences
+
+  my $clean = $parser->remove_escape_sequences( $string );
+
+Strip other terminal escape sequences (those not relating to color)
+from the string to avoid unexpected characters in the output.
+This method is called from L</parse> if C<remove_escapes> is enabled.
+
+=cut
+
+sub remove_escape_sequences {
+  my ($self, $string) = @_;
+
+  # This is in no way comprehensive or accurate...
+  # it just seems like most of the sequences match this.
+  # We could certainly expand this if the need arises.
+  $string =~ s{
+    \e\[
+      [0-9;]+
+      [a-ln-zA-Z]
+  }{}gx;
+
+  return $string;
+}
+
 =func identify_ansicolor
 
 Function wrapped around L</identify>.
@@ -422,6 +448,8 @@ It may not be 100% correct, especially in complex cases.
 It only handles the C<m> escape sequence (C<\033[0m>)
 which produces colors and simple attributes (bold, underline)
 (like what can be produced with L<Term::ANSIColor>).
+Other escape sequences are removed by default
+but you can disable this by passing C<< remove_escapes => 0 >> to the constructor.
 
 If you do find bugs please submit tickets (with patches, if possible).
 
