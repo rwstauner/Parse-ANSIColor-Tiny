@@ -4,7 +4,7 @@ Parse::ANSIColor::Tiny - Determine attributes of ANSI-Colored string
 
 # VERSION
 
-version 0.500
+version 0.501
 
 # SYNOPSIS
 
