@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More 0.96;
 use Test::Differences;
 
@@ -20,5 +22,9 @@ eq_or_diff [$p->normalize(qw(bold underline clear yellow))], [qw(yellow)], 'clea
 eq_or_diff [$p->normalize(qw(red reverse))],                 [qw(red reverse)], 'reverse';
 eq_or_diff [$p->normalize(qw(red reverse reverse_off))],     [qw(red)], 'reverse_off';
 eq_or_diff [$p->normalize(qw(red reverse_off))],             [qw(red)], 'ignore reverse_off without reverse';
+
+eq_or_diff [$p->normalize(qw(   red       reset_foreground))], [qw()],       'fg color, fg reset';
+eq_or_diff [$p->normalize(qw(on_red green reset_foreground))], [qw(on_red)], 'bg color, fg reset';
+eq_or_diff [$p->normalize(qw(on_red       reset_background))], [qw()],       'bg color, bg reset';
 
 done_testing;

@@ -29,4 +29,8 @@ eq_or_diff [$p->identify('31;;;1')],   [qw(red clear clear bold)], 'code;empty;e
 eq_or_diff [$p->identify('31;;0;1')],  [qw(red clear clear bold)], 'code;empty;zero;code';
 eq_or_diff [$p->identify('31;0;0;1')], [qw(red clear clear bold)], 'code;zero;zero;code';
 
+eq_or_diff [$p->identify('31;39')],     [qw(   red       reset_foreground)], 'fg color, fg reset';
+eq_or_diff [$p->identify('41;32;39')],  [qw(on_red green reset_foreground)], 'bg color, fg reset';
+eq_or_diff [$p->identify('41;49')],     [qw(on_red       reset_background)], 'bg color, bg reset';
+
 done_testing;

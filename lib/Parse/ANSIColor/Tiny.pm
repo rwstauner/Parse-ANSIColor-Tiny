@@ -26,6 +26,8 @@ our %ATTRIBUTES = (
   reverse        => 7,
   concealed      => 8,
   reverse_off    => 27,
+  reset_foreground => 39,
+  reset_background => 49,
   %FOREGROUND,
   %BACKGROUND,
 );
@@ -155,6 +157,12 @@ sub normalize {
     elsif( $attr eq 'reverse_off' ){
       # reverse_off cancels reverse
       @norm = grep { $_ ne 'reverse' } @norm;
+    }
+    elsif( $attr eq 'reset_foreground' ){
+      @norm = grep { !exists $FOREGROUND{$_} } @norm;
+    }
+    elsif( $attr eq 'reset_background' ){
+      @norm = grep { !exists $BACKGROUND{$_} } @norm;
     }
     else {
       # remove previous (duplicate) occurrences of this attribute

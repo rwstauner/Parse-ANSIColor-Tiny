@@ -2,6 +2,8 @@ Revision history for Parse-ANSIColor-Tiny
 
 {{$NEXT}}
 
+  - Process 39/49 as foreground/background reset.
+
 0.400     2011-11-19T18:11:12Z
 
   [Enhancements]
