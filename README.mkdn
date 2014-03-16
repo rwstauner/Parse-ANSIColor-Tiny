@@ -4,7 +4,7 @@ Parse::ANSIColor::Tiny - Determine attributes of ANSI-Colored string
 
 # VERSION
 
-version 0.400
+version 0.500
 
 # SYNOPSIS
 
@@ -40,7 +40,7 @@ into a structure suitable for reformatting (into HTML, for example).
 The output of terminal commands can be marked up with colors and formatting
 that in some instances you'd like to preserve.
 
-This module is essentially the inverse of [Term::ANSIColor](http://search.cpan.org/perldoc?Term::ANSIColor).
+This module is essentially the inverse of [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor).
 The array refs returned from ["parse"](#parse)
 can be passed back in to `Term::ANSIColor::colored`.
 The strings may not match exactly due to different ways the attributes can be specified,
@@ -51,7 +51,9 @@ it attempts to be correct for most cases with a small amount of code.
 It may not be 100% correct, especially in complex cases.
 It only handles the `m` escape sequence (`\033[0m`)
 which produces colors and simple attributes (bold, underline)
-(like what can be produced with [Term::ANSIColor](http://search.cpan.org/perldoc?Term::ANSIColor)).
+(like what can be produced with [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor)).
+Other escape sequences are removed by default
+but you can disable this by passing `remove_escapes => 0` to the constructor.
 
 If you do find bugs please submit tickets (with patches, if possible).
 
@@ -64,20 +66,21 @@ Constructor.
 Takes a hash or hash ref of arguments:
 
 - `auto_reverse` - Automatically invert colors when `reverse` is present; Disabled by default.
-- `background` - Color to assume as background; Black by default. Currently used by ["process_reverse"](#process_reverse).
-- `foreground` - Color to assume as foreground; White by default. Currently used by ["process_reverse"](#process_reverse).
+- `background` - Color to assume as background; Black by default. Currently used by ["process\_reverse"](#process_reverse).
+- `foreground` - Color to assume as foreground; White by default. Currently used by ["process\_reverse"](#process_reverse).
+- `remove_escapes` - Remove other terminal escape sequences (not related to color).  Passes strings through ["remove\_escape\_sequences"](#remove_escape_sequences) before parsing.
 
 ## colors
 
 Returns a list of the base color names (in numeric escape sequence order).
 
-## foreground_colors
+## foreground\_colors
 
 Returns a list of the foreground colors (in numeric escape sequence order).
 
 This includes the base colors and the `bright_` variants.
 
-## background_colors
+## background\_colors
 
 Returns a list of the background colors (in numeric escape sequence order).
 
@@ -92,7 +95,7 @@ This includes the `on_` and `on_bright_` variants of the base colors.
 Identifies attributes by their number;
 Returns a __list__ of names.
 
-This is similar to `uncolor()` in [Term::ANSIColor](http://search.cpan.org/perldoc?Term::ANSIColor).
+This is similar to `uncolor()` in [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor).
 
 Unknown codes will be ignored (remove from the output):
 
@@ -128,7 +131,7 @@ and return an array ref of array refs describing the formatting:
     # [
 
 These array refs are consistent with the arguments to
-`colored()` in [Term::ANSIColor](http://search.cpan.org/perldoc?Term::ANSIColor):
+`colored()` in [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor):
 
     Term::ANSIColor::colored( ['red'], 'colored words' );
 
@@ -136,10 +139,10 @@ These array refs are consistent with the arguments to
 
 Performs post-processing on the provided attributes.
 
-This currently includes ["process_reverse"](#process_reverse)
+This currently includes ["process\_reverse"](#process_reverse)
 if `auto_reverse` is enabled.
 
-## process_reverse
+## process\_reverse
 
     my @attr = $parser->process_reverse( $parser->normalize( '31;42;7' ) );
 
@@ -177,30 +180,38 @@ This is consistent with the way it is drawn in the terminal.
 Explicitly specifying both colors should make it easy
 for anything downstream to process and display as intended.
 
+## remove\_escape\_sequences
+
+    my $clean = $parser->remove_escape_sequences( $string );
+
+Strip other terminal escape sequences (those not relating to color)
+from the string to avoid unexpected characters in the output.
+This method is called from ["parse"](#parse) if `remove_escapes` is enabled.
+
 # FUNCTIONS
 
-## identify_ansicolor
+## identify\_ansicolor
 
 Function wrapped around ["identify"](#identify).
 
-## normalize_ansicolor
+## normalize\_ansicolor
 
 Function wrapped around ["normalize"](#normalize).
 
-## parse_ansicolor
+## parse\_ansicolor
 
 Function wrapped around ["parse"](#parse).
 
 # EXPORTS
 
-Everything listed in ["FUNCTIONS"](#FUNCTIONS) is also available for export upon request.
+Everything listed in ["FUNCTIONS"](#functions) is also available for export upon request.
 
 # SEE ALSO
 
-- [Term::ANSIColor](http://search.cpan.org/perldoc?Term::ANSIColor) - For marking up text that will be printed to the terminal
-- [Image::TextMode](http://search.cpan.org/perldoc?Image::TextMode) (and [Image::TextMode::Format::ANSI](http://search.cpan.org/perldoc?Image::TextMode::Format::ANSI)) - Successor to [Image::ANSI](http://search.cpan.org/perldoc?Image::ANSI); Specifically designed for parsing ANSI art
-- [Term::VT102](http://search.cpan.org/perldoc?Term::VT102) - Handles more than colors and is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
-- [HTML::FromANSI::Tiny](http://search.cpan.org/perldoc?HTML::FromANSI::Tiny) - Uses this module to translate ANSI colored text to simple HTML
+- [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor) - For marking up text that will be printed to the terminal
+- [Image::TextMode](https://metacpan.org/pod/Image::TextMode) (and [Image::TextMode::Format::ANSI](https://metacpan.org/pod/Image::TextMode::Format::ANSI)) - Successor to [Image::ANSI](https://metacpan.org/pod/Image::ANSI); Specifically designed for parsing ANSI art
+- [Term::VT102](https://metacpan.org/pod/Term::VT102) - Handles more than colors and is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
+- [HTML::FromANSI::Tiny](https://metacpan.org/pod/HTML::FromANSI::Tiny) - Uses this module to translate ANSI colored text to simple HTML
 
 # SUPPORT
 
@@ -215,41 +226,11 @@ You can find documentation for this module with the perldoc command.
 The following websites have more information about this module, and may be of help to you. As always,
 in addition to those websites please use your favorite search engine to discover more resources.
 
-- Search CPAN
+- MetaCPAN
 
-The default CPAN search engine, useful to view POD in HTML format.
+    A modern, open-source CPAN search engine, useful to view POD in HTML format.
 
-[http://search.cpan.org/dist/Parse-ANSIColor-Tiny](http://search.cpan.org/dist/Parse-ANSIColor-Tiny)
-
-- RT: CPAN's Bug Tracker
-
-The RT ( Request Tracker ) website is the default bug/issue tracking system for CPAN.
-
-[http://rt.cpan.org/NoAuth/Bugs.html?Dist=Parse-ANSIColor-Tiny](http://rt.cpan.org/NoAuth/Bugs.html?Dist=Parse-ANSIColor-Tiny)
-
-- CPAN Ratings
-
-The CPAN Ratings is a website that allows community ratings and reviews of Perl modules.
-
-[http://cpanratings.perl.org/d/Parse-ANSIColor-Tiny](http://cpanratings.perl.org/d/Parse-ANSIColor-Tiny)
-
-- CPAN Testers
-
-The CPAN Testers is a network of smokers who run automated tests on uploaded CPAN distributions.
-
-[http://www.cpantesters.org/distro/P/Parse-ANSIColor-Tiny](http://www.cpantesters.org/distro/P/Parse-ANSIColor-Tiny)
-
-- CPAN Testers Matrix
-
-The CPAN Testers Matrix is a website that provides a visual overview of the test results for a distribution on various Perls/platforms.
-
-[http://matrix.cpantesters.org/?dist=Parse-ANSIColor-Tiny](http://matrix.cpantesters.org/?dist=Parse-ANSIColor-Tiny)
-
-- CPAN Testers Dependencies
-
-The CPAN Testers Dependencies is a website that shows a chart of the test results of all dependencies for a distribution.
-
-[http://deps.cpantesters.org/?module=Parse::ANSIColor::Tiny](http://deps.cpantesters.org/?module=Parse::ANSIColor::Tiny)
+    [http://metacpan.org/release/Parse-ANSIColor-Tiny](http://metacpan.org/release/Parse-ANSIColor-Tiny)
 
 ## Bugs / Feature Requests
 
@@ -258,8 +239,6 @@ the web interface at [http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Parse-ANSIC
 progress on the request by the system.
 
 ## Source Code
-
-
 
 [https://github.com/rwstauner/Parse-ANSIColor-Tiny](https://github.com/rwstauner/Parse-ANSIColor-Tiny)
 

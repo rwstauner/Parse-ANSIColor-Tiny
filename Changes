@@ -2,6 +2,8 @@ Revision history for Parse-ANSIColor-Tiny
 
 {{$NEXT}}
 
+0.500     2014-03-16T00:23:43Z
+
   [Backward Incompatible Changes]
   - By default escape sequences not relating to colors are removed.
     This can be disabled with a constructor argument.
