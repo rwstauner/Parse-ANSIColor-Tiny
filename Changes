@@ -2,6 +2,8 @@ Revision history for Parse-ANSIColor-Tiny
 
 {{$NEXT}}
 
+  - Improve parsing (removal) of non-color escapes.
+
 0.500     2014-03-16T00:23:43Z
 
   [Backward Incompatible Changes]

@@ -343,7 +343,7 @@ sub remove_escape_sequences {
   # We could certainly expand this if the need arises.
   $string =~ s{
     \e\[
-      [0-9;]+
+      [0-9;]*
       [a-ln-zA-Z]
   }{}gx;
 

@@ -97,5 +97,14 @@ eq_or_diff
   ],
   'retained screen/cursor escape sequences as configured';
 
+eq_or_diff
+  $p->parse("\e[xFoo\e[31mBar\e[mBaz"),
+  [
+    [ [     ], 'Foo' ],
+    [ ['red'], 'Bar' ],
+    [ [     ], 'Baz' ],
+  ],
+  'parse escape sequences without a number removal';
+
 
 done_testing;
