@@ -75,36 +75,4 @@ eq_or_diff
   ],
   '"reverse" sequence carried across empty string with auto_reverse';
 
-chomp(my $other_escapes = <<ESC);
-\033[1A\033[2KPhantomJS 1.9.7 (Linux): Executed 5 of 10\033[32m SUCCESS\033[39m (0 secs / 0.066 secs)\033[0m
-ESC
-
-eq_or_diff
-  $p->parse($other_escapes),
-  [
-    [ [       ], 'PhantomJS 1.9.7 (Linux): Executed 5 of 10' ],
-    [ ['green'], ' SUCCESS' ],
-    [ [       ], ' (0 secs / 0.066 secs)' ],
-  ],
-  'removed screen/cursor escape sequences';
-
-eq_or_diff
-  new_ok($mod, [remove_escapes => 0])->parse($other_escapes),
-  [
-    [ [       ], "\e[1A\e[2KPhantomJS 1.9.7 (Linux): Executed 5 of 10" ],
-    [ ['green'], " SUCCESS" ],
-    [ [       ], " (0 secs / 0.066 secs)" ],
-  ],
-  'retained screen/cursor escape sequences as configured';
-
-eq_or_diff
-  $p->parse("\e[xFoo\e[31mBar\e[mBaz"),
-  [
-    [ [     ], 'Foo' ],
-    [ ['red'], 'Bar' ],
-    [ [     ], 'Baz' ],
-  ],
-  'parse escape sequences without a number removal';
-
-
 done_testing;
