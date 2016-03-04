@@ -32,6 +32,36 @@ our %ATTRIBUTES = (
   %BACKGROUND,
 );
 
+# Generating the 256-color codes involves a lot of codes and offsets that are
+# not helped by turning them into constants.
+## no critic (ValuesAndExpressions::ProhibitMagicNumbers)
+
+# The first 16 256-color codes are duplicates of the 16 ANSI colors,
+# included for completeness.
+for my $code (0 .. 15) {
+    $ATTRIBUTES{"ansi$code"}    = "38;5;$code";
+    $ATTRIBUTES{"on_ansi$code"} = "48;5;$code";
+}
+
+# 256-color RGB colors.  Red, green, and blue can each be values 0 through 5,
+# and the resulting 216 colors start with color 16.
+for my $r (0 .. 5) {
+    for my $g (0 .. 5) {
+        for my $b (0 .. 5) {
+            my $code = 16 + (6 * 6 * $r) + (6 * $g) + $b;
+            $ATTRIBUTES{"rgb$r$g$b"}    = "38;5;$code";
+            $ATTRIBUTES{"on_rgb$r$g$b"} = "48;5;$code";
+        }
+    }
+}
+
+# The last 256-color codes are 24 shades of grey.
+for my $n (0 .. 23) {
+    my $code = $n + 232;
+    $ATTRIBUTES{"grey$n"}    = "38;5;$code";
+    $ATTRIBUTES{"on_grey$n"} = "48;5;$code";
+}
+
 # copied from Term::ANSIColor
   our %ATTRIBUTES_R;
   # Reverse lookup.  Alphabetically first name for a sequence is preferred.
@@ -98,6 +128,32 @@ sub background_colors {
   return ( (map { "on_$_" } @COLORS), (map { "on_bright_$_" } @COLORS) );
 }
 
+=method split_with_extended
+
+  my @nums = split_with_extended('1;31;38;5;38;1');
+  # returns (1 31 '38;5;38' 1)
+
+Split string with attribute numbers and extended color indentifiers
+Returns a B<list> of identifiers
+
+This is similar to C<split()> by ;, but keeps extended color codes like C<38;5;fgcode> and C<48;5;bgcode> unsplited
+
+=cut
+
+sub split_with_extended
+{
+  my ($codes) = @_;
+  my @nums;
+  my ($attrs) = $codes =~ m{ \A ((?:\d*;)* \d*) \z }xms;
+  if (!defined $attrs) {
+    return ();
+  }
+
+  push @nums, $attrs =~ m{ 0*( [34]8;0*5;\d+ | \d+) (?: ; | \z ) | ;}xmsg;
+    
+  return map  { defined $_ ?  $_  : '0' } @nums;
+}
+
 =method identify
 
   my @names = $parser->identify('1;31');
@@ -116,14 +172,18 @@ Unknown codes will be ignored (remove from the output):
 
 =cut
 
+
 sub identify {
   my ($self, @codes) = @_;
   local $_;
   return
     grep { defined }
-    map  { $ATTRIBUTES_R{ 0 + ($_ || 0) } }
-    map  { split /;/ }
+    # convert to integet only in a case of ; absence
+    map  { $ATTRIBUTES_R{  m/;/ ? $_  : 0 + ($_ || 0)  } }
+    # matching 256-color code and avoid split in this case
+    map { split_with_extended($_) }
     # empty sequence is the same as clear so don't let split throw out empty ends
+    map  { s/;;/;0;/g; $_ }
     map  { m/;$/ ? $_ . '0' : $_ }
     # prepending zero doesn't hurt and is probably better than s/^;/0;/
     map  { '0' . ($_ || '0')  }
