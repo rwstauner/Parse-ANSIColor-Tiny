@@ -150,8 +150,11 @@ sub split_with_extended
   }
 
   push @nums, $attrs =~ m{ 0*( [34]8;0*5;\d+ | \d+) (?: ; | \z ) | ;}xmsg;
-    
-  return map  { defined $_ ?  $_  : '0' } @nums;
+  return  
+      # remove leading zeros in color code
+      map { m/;/g ? s/0+(\d+)/\1/g : (); $_  }
+      # removed undefined with zero
+      map  { defined $_ ?  $_  : '0' } @nums;
 }
 
 =method identify
