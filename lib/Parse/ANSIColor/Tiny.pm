@@ -520,7 +520,7 @@ If you do find bugs please submit tickets (with patches, if possible).
 
 =for :list
 * L<Term::ANSIColor> - For marking up text that will be printed to the terminal
-* L<Image::TextMode> (and L<Image::TextMode::Format::ANSI>) - Successor to L<Image::ANSI>; Specifically designed for parsing ANSI art
+* L<Image::TextMode> (and L<Image::TextMode::Format::ANSI>) - Successor to C<Image::ANSI>; Specifically designed for parsing ANSI art
 * L<Term::VT102> - Handles more than colors and is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
 * L<HTML::FromANSI::Tiny> - Uses this module to translate ANSI colored text to simple HTML
 
