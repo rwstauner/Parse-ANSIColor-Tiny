@@ -32,14 +32,24 @@ eq_or_diff [$p->identify('31;0;0;1')], [qw(red clear clear bold)], 'code;zero;ze
 eq_or_diff [$p->identify('31;39')],     [qw(   red       reset_foreground)], 'fg color, fg reset';
 eq_or_diff [$p->identify('41;32;39')],  [qw(on_red green reset_foreground)], 'bg color, fg reset';
 eq_or_diff [$p->identify('41;49')],     [qw(on_red       reset_background)], 'bg color, bg reset';
+
 eq_or_diff [$p->identify('38;5;1')],     [qw(ansi1)], 'fg asni extended color';
 eq_or_diff [$p->identify('48;5;15')],     [qw(on_ansi15)], 'bg ansi extended color';
 eq_or_diff [$p->identify('38;5;124')],     [qw(rgb300)], 'fg extended color';
+
 eq_or_diff [$p->identify('48;5;230')],     [qw(on_rgb554)], 'extended color, color codes';
 eq_or_diff [$p->identify('38;5;64;0')],     [qw(rgb120 clear)], 'fg extended color;clear';
 eq_or_diff [$p->identify('48;5;14;0;38;5;45')],     [qw(on_ansi14 clear rgb045)], 'bg extended color; clear; fg extended color;clear';
 eq_or_diff [$p->identify('38;5;67;;38;5;86')],     [qw(rgb123 clear rgb154)], 'bg extended color; clear; fg extended color;clear';
 eq_or_diff [$p->identify('48;5;13;')],     [qw(on_ansi13 clear)], 'fg extended color;clear';
 eq_or_diff [$p->identify('48;5;0017;')],     [qw(on_rgb001 clear)], 'fg extended color with leading zeros;clear';
+
+# regression tests {
+eq_or_diff [$p->identify('38;5;009')],     [qw(ansi9) ], 'extended (00x)';
+eq_or_diff [$p->identify('38;5;029')],     [qw(rgb021)], 'extended (0xx)';
+eq_or_diff [$p->identify('38;5;209')],     [qw(rgb521)], 'extended (x0x)';
+eq_or_diff [$p->identify('38;5;220')],     [qw(rgb540)], 'extended (xx0)';
+eq_or_diff [$p->identify('38;5;200')],     [qw(rgb504)], 'extended (x00)';
+# }
 
 done_testing;
