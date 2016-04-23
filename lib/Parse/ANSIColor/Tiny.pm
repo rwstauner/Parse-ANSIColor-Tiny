@@ -128,35 +128,6 @@ sub background_colors {
   return ( (map { "on_$_" } @COLORS), (map { "on_bright_$_" } @COLORS) );
 }
 
-=method split_with_extended
-
-  my @nums = split_with_extended('1;31;38;5;38;1');
-  # returns (1 31 '38;5;38' 1)
-
-Split string with attribute numbers and extended color indentifiers
-Returns a B<list> of identifiers
-
-This is similar to C<split()> by ;, but keeps extended color codes like C<38;5;fgcode> and C<48;5;bgcode> unsplited
-
-=cut
-
-sub split_with_extended
-{
-  my ($codes) = @_;
-  my @nums;
-  my ($attrs) = $codes =~ m{ \A ((?:\d*;)* \d*) \z }xms;
-  if (!defined $attrs) {
-    return ();
-  }
-
-  push @nums, $attrs =~ m{ 0*( [34]8;0*5;\d+ | \d+) (?: ; | \z ) | ;}xmsg;
-  return
-      # remove leading zeros in color code
-      map { m/;/g ? s/\b0+(\d+)/$1/g : (); $_  }
-      # removed undefined with zero
-      map  { defined $_ ?  $_  : '0' } @nums;
-}
-
 =method identify
 
   my @names = $parser->identify('1;31');
@@ -175,22 +146,34 @@ Unknown codes will be ignored (remove from the output):
 
 =cut
 
+sub __separate_and_normalize {
+  my ($codes) = @_;
+
+  # Treat empty as "clear".
+  defined($codes) && length($codes)
+    or return 0;
+
+  # Replace empty (clear) with zero to simplify parsing and return values.
+  $codes =~ s/^;/0;/;
+  $codes =~ s/;$/;0/;
+  # Insert a zero between two semicolons (use look-ahead to get /g to find all).
+  $codes =~ s/;(?=;)/;0/g;
+
+  # Remove any leading zeros from (sections of) codes.
+  $codes =~ s/\b0+(?=\d)//g;
+
+  # Return all matches (of extended sequences or digits).
+  return $codes =~ m{ ( [34]8;5;\d+ | \d+) }xg;
+}
 
 sub identify {
   my ($self, @codes) = @_;
   local $_;
   return
     grep { defined }
-    # convert to integet only in a case of ; absence
-    map  { $ATTRIBUTES_R{  m/;/ ? $_  : 0 + ($_ || 0)  } }
-    # matching 256-color code and avoid split in this case
-    map { split_with_extended($_) }
-    # empty sequence is the same as clear so don't let split throw out empty ends
-    map  { s/;;/;0;/g; $_ }
-    map  { m/;$/ ? $_ . '0' : $_ }
-    # prepending zero doesn't hurt and is probably better than s/^;/0;/
-    map  { '0' . ($_ || '0')  }
-    @codes;
+    map  { $ATTRIBUTES_R{ $_ } }
+    map  { __separate_and_normalize($_) }
+      @codes;
 }
 
 =method normalize

@@ -44,6 +44,8 @@ eq_or_diff [$p->identify('38;5;67;;38;5;86')],     [qw(rgb123 clear rgb154)], 'b
 eq_or_diff [$p->identify('48;5;13;')],     [qw(on_ansi13 clear)], 'fg extended color;clear';
 eq_or_diff [$p->identify('48;5;0017;')],     [qw(on_rgb001 clear)], 'fg extended color with leading zeros;clear';
 
+eq_or_diff [$p->identify('1;138;5;1')],     [qw(bold blink bold)], 'extra digit not an extended sequenc';
+
 # regression tests {
 eq_or_diff [$p->identify('38;5;009')],     [qw(ansi9) ], 'extended (00x)';
 eq_or_diff [$p->identify('38;5;029')],     [qw(rgb021)], 'extended (0xx)';
@@ -51,5 +53,7 @@ eq_or_diff [$p->identify('38;5;209')],     [qw(rgb521)], 'extended (x0x)';
 eq_or_diff [$p->identify('38;5;220')],     [qw(rgb540)], 'extended (xx0)';
 eq_or_diff [$p->identify('38;5;200')],     [qw(rgb504)], 'extended (x00)';
 # }
+
+eq_or_diff [$p->identify('000;0001;00038;0005;000200;000')],     [qw(clear bold rgb504 clear)], 'three leading zeros';
 
 done_testing;
