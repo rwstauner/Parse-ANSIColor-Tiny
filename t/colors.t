@@ -10,19 +10,42 @@ my $p = new_ok($mod);
 
 my @colors = qw( black red green yellow blue magenta cyan white );
 
+my @colors256 = (
+  (map { "ansi$_" } 0 .. 15),
+  do {
+    my @c;
+    for my $r (0 .. 5) {
+        for my $g (0 .. 5) {
+            push(@c, map { "rgb$r$g$_" } 0 .. 5);
+        }
+    }
+    @c;
+  },
+  (map { "grey$_" } 0 .. 23),
+);
+
+
 eq_or_diff
   [$p->colors],
-  [@colors],
-  'base colors';
+  [@colors, @colors256],
+  'color names';
 
 eq_or_diff
   [$p->foreground_colors],
-  [@colors, map { "bright_$_" } @colors],
+  [
+    @colors,
+    (map { "bright_$_" } @colors),
+    @colors256,
+  ],
   'fg colors';
 
 eq_or_diff
   [$p->background_colors],
-  [(map { "on_$_" } @colors), (map { "on_bright_$_" } @colors)],
+  [
+    (map { "on_$_" } @colors),
+    (map { "on_bright_$_" } @colors),
+    (map { "on_$_" } @colors256),
+  ],
   'bg colors';
 
 # test the default colors

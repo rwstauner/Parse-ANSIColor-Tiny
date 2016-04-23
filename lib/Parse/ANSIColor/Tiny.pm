@@ -36,30 +36,38 @@ our %ATTRIBUTES = (
 # not helped by turning them into constants.
 ## no critic (ValuesAndExpressions::ProhibitMagicNumbers)
 
+our @COLORS256;
+
 # The first 16 256-color codes are duplicates of the 16 ANSI colors,
 # included for completeness.
 for my $code (0 .. 15) {
-    $ATTRIBUTES{"ansi$code"}    = "38;5;$code";
-    $ATTRIBUTES{"on_ansi$code"} = "48;5;$code";
+  my $name = "ansi$code";
+  $ATTRIBUTES{$name}      = "38;5;$code";
+  $ATTRIBUTES{"on_$name"} = "48;5;$code";
+  push @COLORS256, $name;
 }
 
 # 256-color RGB colors.  Red, green, and blue can each be values 0 through 5,
 # and the resulting 216 colors start with color 16.
 for my $r (0 .. 5) {
-    for my $g (0 .. 5) {
-        for my $b (0 .. 5) {
-            my $code = 16 + (6 * 6 * $r) + (6 * $g) + $b;
-            $ATTRIBUTES{"rgb$r$g$b"}    = "38;5;$code";
-            $ATTRIBUTES{"on_rgb$r$g$b"} = "48;5;$code";
-        }
+  for my $g (0 .. 5) {
+    for my $b (0 .. 5) {
+      my $code = 16 + (6 * 6 * $r) + (6 * $g) + $b;
+      my $name = "rgb$r$g$b";
+      $ATTRIBUTES{$name}    = "38;5;$code";
+      $ATTRIBUTES{"on_$name"} = "48;5;$code";
+      push @COLORS256, $name;
     }
+  }
 }
 
 # The last 256-color codes are 24 shades of grey.
 for my $n (0 .. 23) {
-    my $code = $n + 232;
-    $ATTRIBUTES{"grey$n"}    = "38;5;$code";
-    $ATTRIBUTES{"on_grey$n"} = "48;5;$code";
+  my $code = $n + 232;
+  my $name = "grey$n";
+  $ATTRIBUTES{$name}      = "38;5;$code";
+  $ATTRIBUTES{"on_$name"} = "48;5;$code";
+  push @COLORS256, $name;
 }
 
 # copied from Term::ANSIColor
@@ -108,24 +116,34 @@ Returns a list of the base color names (in numeric escape sequence order).
 
 Returns a list of the foreground colors (in numeric escape sequence order).
 
-This includes the base colors and the C<bright_> variants.
+This includes the base colors, their C<bright_> variants,
+and the names from the 256 palette (prefixes of C<ansi>, C<rgb>, and C<grey>).
 
 =method background_colors
 
 Returns a list of the background colors (in numeric escape sequence order).
 
-This includes the C<on_> and C<on_bright_> variants of the base colors.
+This includes the C<on_> and C<on_bright_> variants of the base colors
+and the C<on_> names for the 256 palette.
 
 =cut
 
 sub colors {
-  return @COLORS;
+  return (@COLORS, @COLORS256);
 }
 sub foreground_colors {
-  return (@COLORS, map { "bright_$_" } @COLORS);
+  return (
+    @COLORS,
+    (map { "bright_$_" } @COLORS),
+    @COLORS256,
+  );
 }
 sub background_colors {
-  return ( (map { "on_$_" } @COLORS), (map { "on_bright_$_" } @COLORS) );
+  return (
+    (map { "on_$_" } @COLORS),
+    (map { "on_bright_$_" } @COLORS),
+    (map { "on_$_" } @COLORS256),
+  );
 }
 
 =method identify
