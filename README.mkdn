@@ -1,10 +1,14 @@
+[![Build Status](https://travis-ci.org/rwstauner/Parse-ANSIColor-Tiny.svg?branch=master)](https://travis-ci.org/rwstauner/Parse-ANSIColor-Tiny)
+[![Coverage Status](https://coveralls.io/repos/rwstauner/Parse-ANSIColor-Tiny/badge.svg?branch=master)](https://coveralls.io/r/rwstauner/Parse-ANSIColor-Tiny?branch=master)
+[![Kwalitee status](http://cpants.cpanauthors.org/dist/Parse-ANSIColor-Tiny.png)](http://cpants.charsbar.org/dist/overview/Parse-ANSIColor-Tiny)
+
 # NAME
 
 Parse::ANSIColor::Tiny - Determine attributes of ANSI-Colored string
 
 # VERSION
 
-version 0.501
+version 0.600
 
 # SYNOPSIS
 
@@ -78,13 +82,15 @@ Returns a list of the base color names (in numeric escape sequence order).
 
 Returns a list of the foreground colors (in numeric escape sequence order).
 
-This includes the base colors and the `bright_` variants.
+This includes the base colors, their `bright_` variants,
+and the names from the 256 palette (prefixes of `ansi`, `rgb`, and `grey`).
 
 ## background\_colors
 
 Returns a list of the background colors (in numeric escape sequence order).
 
-This includes the `on_` and `on_bright_` variants of the base colors.
+This includes the `on_` and `on_bright_` variants of the base colors
+and the `on_` names for the 256 palette.
 
 ## identify
 
@@ -93,7 +99,7 @@ This includes the `on_` and `on_bright_` variants of the base colors.
     # returns ('bold', 'red')
 
 Identifies attributes by their number;
-Returns a __list__ of names.
+Returns a **list** of names.
 
 This is similar to `uncolor()` in [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor).
 
@@ -209,7 +215,7 @@ Everything listed in ["FUNCTIONS"](#functions) is also available for export upon
 # SEE ALSO
 
 - [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor) - For marking up text that will be printed to the terminal
-- [Image::TextMode](https://metacpan.org/pod/Image::TextMode) (and [Image::TextMode::Format::ANSI](https://metacpan.org/pod/Image::TextMode::Format::ANSI)) - Successor to [Image::ANSI](https://metacpan.org/pod/Image::ANSI); Specifically designed for parsing ANSI art
+- [Image::TextMode](https://metacpan.org/pod/Image::TextMode) (and [Image::TextMode::Format::ANSI](https://metacpan.org/pod/Image::TextMode::Format::ANSI)) - Successor to `Image::ANSI`; Specifically designed for parsing ANSI art
 - [Term::VT102](https://metacpan.org/pod/Term::VT102) - Handles more than colors and is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
 - [HTML::FromANSI::Tiny](https://metacpan.org/pod/HTML::FromANSI::Tiny) - Uses this module to translate ANSI colored text to simple HTML
 
@@ -235,7 +241,7 @@ in addition to those websites please use your favorite search engine to discover
 ## Bugs / Feature Requests
 
 Please report any bugs or feature requests by email to `bug-parse-ansicolor-tiny at rt.cpan.org`, or through
-the web interface at [http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Parse-ANSIColor-Tiny](http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Parse-ANSIColor-Tiny). You will be automatically notified of any
+the web interface at [https://rt.cpan.org/Public/Bug/Report.html?Queue=Parse-ANSIColor-Tiny](https://rt.cpan.org/Public/Bug/Report.html?Queue=Parse-ANSIColor-Tiny). You will be automatically notified of any
 progress on the request by the system.
 
 ## Source Code
@@ -246,7 +252,11 @@ progress on the request by the system.
 
 # AUTHOR
 
-Randy Stauner <rwstauner@cpan.org>
+Randy Stauner &lt;rwstauner@cpan.org>
+
+# CONTRIBUTOR
+
+Dmitry Fedin &lt;dmitry.fedin@gmail.com>
 
 # COPYRIGHT AND LICENSE
 

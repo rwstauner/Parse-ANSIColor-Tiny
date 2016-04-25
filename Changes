@@ -2,6 +2,11 @@ Revision history for Parse-ANSIColor-Tiny
 
 {{$NEXT}}
 
+0.600     2016-04-25T04:38:24Z
+
+  - Add support for 256 colors.
+    Thanks to Dmitry Fedin for the pull request! (gh-1)
+
 0.501     2014-03-16T01:28:17Z
 
   - Improve parsing (removal) of non-color escapes.
