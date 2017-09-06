@@ -8,7 +8,7 @@ Parse::ANSIColor::Tiny - Determine attributes of ANSI-Colored string
 
 # VERSION
 
-version 0.600
+version 0.601
 
 # SYNOPSIS
 
@@ -252,11 +252,11 @@ progress on the request by the system.
 
 # AUTHOR
 
-Randy Stauner &lt;rwstauner@cpan.org>
+Randy Stauner <rwstauner@cpan.org>
 
 # CONTRIBUTOR
 
-Dmitry Fedin &lt;dmitry.fedin@gmail.com>
+Dmitry Fedin <dmitry.fedin@gmail.com>
 
 # COPYRIGHT AND LICENSE
 
