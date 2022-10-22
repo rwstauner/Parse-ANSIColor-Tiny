@@ -14,6 +14,45 @@ our %BACKGROUND = (
   (map { (       'on_' . $COLORS[$_] =>  40 + $_ ) } 0 .. $#COLORS),
   (map { ('on_bright_' . $COLORS[$_] => 100 + $_ ) } 0 .. $#COLORS),
 );
+
+# Generating the 256-color codes involves a lot of codes and offsets that are
+# not helped by turning them into constants.
+## no critic (ValuesAndExpressions::ProhibitMagicNumbers)
+
+our @COLORS256;
+
+# The first 16 256-color codes are duplicates of the 16 ANSI colors,
+# included for completeness.
+for my $code (0 .. 15) {
+  my $name = "ansi$code";
+  $FOREGROUND{$name}      = "38;5;$code";
+  $BACKGROUND{"on_$name"} = "48;5;$code";
+  push @COLORS256, $name;
+}
+
+# 256-color RGB colors.  Red, green, and blue can each be values 0 through 5,
+# and the resulting 216 colors start with color 16.
+for my $r (0 .. 5) {
+  for my $g (0 .. 5) {
+    for my $b (0 .. 5) {
+      my $code = 16 + (6 * 6 * $r) + (6 * $g) + $b;
+      my $name = "rgb$r$g$b";
+      $FOREGROUND{$name}    = "38;5;$code";
+      $BACKGROUND{"on_$name"} = "48;5;$code";
+      push @COLORS256, $name;
+    }
+  }
+}
+
+# The last 256-color codes are 24 shades of grey.
+for my $n (0 .. 23) {
+  my $code = $n + 232;
+  my $name = "grey$n";
+  $FOREGROUND{$name}      = "38;5;$code";
+  $BACKGROUND{"on_$name"} = "48;5;$code";
+  push @COLORS256, $name;
+}
+
 our %ATTRIBUTES = (
   clear          => 0,
   reset          => 0,
@@ -31,44 +70,6 @@ our %ATTRIBUTES = (
   %FOREGROUND,
   %BACKGROUND,
 );
-
-# Generating the 256-color codes involves a lot of codes and offsets that are
-# not helped by turning them into constants.
-## no critic (ValuesAndExpressions::ProhibitMagicNumbers)
-
-our @COLORS256;
-
-# The first 16 256-color codes are duplicates of the 16 ANSI colors,
-# included for completeness.
-for my $code (0 .. 15) {
-  my $name = "ansi$code";
-  $ATTRIBUTES{$name}      = "38;5;$code";
-  $ATTRIBUTES{"on_$name"} = "48;5;$code";
-  push @COLORS256, $name;
-}
-
-# 256-color RGB colors.  Red, green, and blue can each be values 0 through 5,
-# and the resulting 216 colors start with color 16.
-for my $r (0 .. 5) {
-  for my $g (0 .. 5) {
-    for my $b (0 .. 5) {
-      my $code = 16 + (6 * 6 * $r) + (6 * $g) + $b;
-      my $name = "rgb$r$g$b";
-      $ATTRIBUTES{$name}    = "38;5;$code";
-      $ATTRIBUTES{"on_$name"} = "48;5;$code";
-      push @COLORS256, $name;
-    }
-  }
-}
-
-# The last 256-color codes are 24 shades of grey.
-for my $n (0 .. 23) {
-  my $code = $n + 232;
-  my $name = "grey$n";
-  $ATTRIBUTES{$name}      = "38;5;$code";
-  $ATTRIBUTES{"on_$name"} = "48;5;$code";
-  push @COLORS256, $name;
-}
 
 # copied from Term::ANSIColor
   our %ATTRIBUTES_R;
