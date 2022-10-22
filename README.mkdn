@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/rwstauner/Parse-ANSIColor-Tiny.svg?branch=master)](https://travis-ci.org/rwstauner/Parse-ANSIColor-Tiny)
 [![Coverage Status](https://coveralls.io/repos/rwstauner/Parse-ANSIColor-Tiny/badge.svg?branch=master)](https://coveralls.io/r/rwstauner/Parse-ANSIColor-Tiny?branch=master)
-[![Kwalitee status](http://cpants.cpanauthors.org/dist/Parse-ANSIColor-Tiny.png)](http://cpants.charsbar.org/dist/overview/Parse-ANSIColor-Tiny)
+[![Kwalitee status](https://cpants.cpanauthors.org/dist/Parse-ANSIColor-Tiny.png)](https://cpants.cpanauthors.org/dist/Parse-ANSIColor-Tiny)
 
 # NAME
 
@@ -8,7 +8,7 @@ Parse::ANSIColor::Tiny - Determine attributes of ANSI-Colored string
 
 # VERSION
 
-version 0.601
+version 0.700
 
 # SYNOPSIS
 
@@ -44,7 +44,7 @@ into a structure suitable for reformatting (into HTML, for example).
 The output of terminal commands can be marked up with colors and formatting
 that in some instances you'd like to preserve.
 
-This module is essentially the inverse of [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor).
+This module is essentially the inverse of [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor).
 The array refs returned from ["parse"](#parse)
 can be passed back in to `Term::ANSIColor::colored`.
 The strings may not match exactly due to different ways the attributes can be specified,
@@ -55,7 +55,7 @@ it attempts to be correct for most cases with a small amount of code.
 It may not be 100% correct, especially in complex cases.
 It only handles the `m` escape sequence (`\033[0m`)
 which produces colors and simple attributes (bold, underline)
-(like what can be produced with [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor)).
+(like what can be produced with [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor)).
 Other escape sequences are removed by default
 but you can disable this by passing `remove_escapes => 0` to the constructor.
 
@@ -101,7 +101,7 @@ and the `on_` names for the 256 palette.
 Identifies attributes by their number;
 Returns a **list** of names.
 
-This is similar to `uncolor()` in [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor).
+This is similar to `uncolor()` in [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor).
 
 Unknown codes will be ignored (remove from the output):
 
@@ -137,7 +137,7 @@ and return an array ref of array refs describing the formatting:
     # [
 
 These array refs are consistent with the arguments to
-`colored()` in [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor):
+`colored()` in [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor):
 
     Term::ANSIColor::colored( ['red'], 'colored words' );
 
@@ -214,10 +214,10 @@ Everything listed in ["FUNCTIONS"](#functions) is also available for export upon
 
 # SEE ALSO
 
-- [Term::ANSIColor](https://metacpan.org/pod/Term::ANSIColor) - For marking up text that will be printed to the terminal
-- [Image::TextMode](https://metacpan.org/pod/Image::TextMode) (and [Image::TextMode::Format::ANSI](https://metacpan.org/pod/Image::TextMode::Format::ANSI)) - Successor to `Image::ANSI`; Specifically designed for parsing ANSI art
-- [Term::VT102](https://metacpan.org/pod/Term::VT102) - Handles more than colors and is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
-- [HTML::FromANSI::Tiny](https://metacpan.org/pod/HTML::FromANSI::Tiny) - Uses this module to translate ANSI colored text to simple HTML
+- [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor) - For marking up text that will be printed to the terminal
+- [Image::TextMode](https://metacpan.org/pod/Image%3A%3ATextMode) (and [Image::TextMode::Format::ANSI](https://metacpan.org/pod/Image%3A%3ATextMode%3A%3AFormat%3A%3AANSI)) - Successor to `Image::ANSI`; Specifically designed for parsing ANSI art
+- [Term::VT102](https://metacpan.org/pod/Term%3A%3AVT102) - Handles more than colors and is likely more robust but may be overkill in simple situations (and was difficult to install in the past).
+- [HTML::FromANSI::Tiny](https://metacpan.org/pod/HTML%3A%3AFromANSI%3A%3ATiny) - Uses this module to translate ANSI colored text to simple HTML
 
 # SUPPORT
 
@@ -236,7 +236,7 @@ in addition to those websites please use your favorite search engine to discover
 
     A modern, open-source CPAN search engine, useful to view POD in HTML format.
 
-    [http://metacpan.org/release/Parse-ANSIColor-Tiny](http://metacpan.org/release/Parse-ANSIColor-Tiny)
+    [https://metacpan.org/release/Parse-ANSIColor-Tiny](https://metacpan.org/release/Parse-ANSIColor-Tiny)
 
 ## Bugs / Feature Requests
 
@@ -254,9 +254,10 @@ progress on the request by the system.
 
 Randy Stauner <rwstauner@cpan.org>
 
-# CONTRIBUTOR
+# CONTRIBUTORS
 
-Dmitry Fedin <dmitry.fedin@gmail.com>
+- Dmitry Fedin <dmitry.fedin@gmail.com>
+- Randy Stauner <randy@r4s6.net>
 
 # COPYRIGHT AND LICENSE
 
