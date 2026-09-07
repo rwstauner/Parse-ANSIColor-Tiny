@@ -78,6 +78,19 @@ our %ATTRIBUTES = (
       $ATTRIBUTES_R{$ATTRIBUTES{$_}} = $_;
   }
 
+# True color attributes (of the form "r255g128b0") are handled by pattern
+# rather than lookup: there are sixteen million of each, so they can't go in
+# %ATTRIBUTES (or %FOREGROUND or %BACKGROUND) the way the other colors do.
+sub __is_foreground {
+  my ($attr) = @_;
+  return exists($FOREGROUND{ $attr }) || $attr =~ /\Ar[0-9]+g[0-9]+b[0-9]+\z/;
+}
+
+sub __is_background {
+  my ($attr) = @_;
+  return exists($BACKGROUND{ $attr }) || $attr =~ /\Aon_r[0-9]+g[0-9]+b[0-9]+\z/;
+}
+
 =method new
 
 Constructor.
@@ -120,12 +133,18 @@ Returns a list of the foreground colors (in numeric escape sequence order).
 This includes the base colors, their C<bright_> variants,
 and the names from the 256 palette (prefixes of C<ansi>, C<rgb>, and C<grey>).
 
+The true color names (C<< rI<R>gI<G>bI<B> >>) are not included;
+there are too many of them to enumerate.
+
 =method background_colors
 
 Returns a list of the background colors (in numeric escape sequence order).
 
 This includes the C<on_> and C<on_bright_> variants of the base colors
 and the C<on_> names for the 256 palette.
+
+The true color names (C<< on_rI<R>gI<G>bI<B> >>) are not included;
+there are too many of them to enumerate.
 
 =cut
 
@@ -163,6 +182,17 @@ Unknown codes will be ignored (remove from the output):
   $parser->identify('33', '52');
   # returns ('yellow') # drops the '52'
 
+True color (24-bit) sequences are named the way L<Term::ANSIColor> names them:
+
+  $parser->identify('38;2;255;136;0');
+  # returns ('r255g136b0')
+
+  $parser->identify('48;2;0;10;20');
+  # returns ('on_r0g10b20')
+
+A true color sequence with a component greater than 255 isn't a color,
+so it is dropped like any other unknown code.
+
 =cut
 
 sub __separate_and_normalize {
@@ -182,7 +212,19 @@ sub __separate_and_normalize {
   $codes =~ s/\b0+(?=\d)//g;
 
   # Return all matches (of extended sequences or digits).
-  return $codes =~ m{ ( [34]8;5;\d+ | \d+) }xg;
+  return $codes =~ m{ ( [34]8;5;\d+ | [34]8;2;\d+;\d+;\d+ | \d+) }xg;
+}
+
+sub __attribute_name {
+  my ($code) = @_;
+
+  if( my ($ground, @rgb) = $code =~ m{ \A ([34])8;2;(\d+);(\d+);(\d+) \z }x ){
+    # Anything over 255 isn't a color; drop it like any other unknown code.
+    return if grep { $_ > 255 } @rgb;
+    return ($ground == 4 ? 'on_' : '') . sprintf('r%dg%db%d', @rgb);
+  }
+
+  return $ATTRIBUTES_R{ $code };
 }
 
 sub identify {
@@ -190,7 +232,7 @@ sub identify {
   local $_;
   return
     grep { defined }
-    map  { $ATTRIBUTES_R{ $_ } }
+    map  { __attribute_name($_) }
     map  { __separate_and_normalize($_) }
       @codes;
 }
@@ -207,6 +249,7 @@ and reduces the list to only those that would have effect.
 * Duplicates will be removed
 * a foreground color will overwrite any previous foreground color (and the previous ones will be removed)
 * same for background colors
+* true color attributes count as foreground/background colors just like the named ones do
 * C<clear> will remove all previous attributes
 
   my @norm = $parser->normalize(qw(red bold green));
@@ -226,18 +269,18 @@ sub normalize {
       @norm = grep { $_ ne 'reverse' } @norm;
     }
     elsif( $attr eq 'reset_foreground' ){
-      @norm = grep { !exists $FOREGROUND{$_} } @norm;
+      @norm = grep { !__is_foreground($_) } @norm;
     }
     elsif( $attr eq 'reset_background' ){
-      @norm = grep { !exists $BACKGROUND{$_} } @norm;
+      @norm = grep { !__is_background($_) } @norm;
     }
     else {
       # remove previous (duplicate) occurrences of this attribute
       @norm = grep { $_ ne $attr } @norm;
       # new fg color overwrites previous fg
-      @norm = grep { !exists $FOREGROUND{$_} } @norm if exists $FOREGROUND{$attr};
+      @norm = grep { !__is_foreground($_) } @norm if __is_foreground($attr);
       # new bg color overwrites previous bg
-      @norm = grep { !exists $BACKGROUND{$_} } @norm if exists $BACKGROUND{$attr};
+      @norm = grep { !__is_background($_) } @norm if __is_background($attr);
       push @norm, $attr;
     }
   }
@@ -368,10 +411,10 @@ sub process_reverse {
       $rev = 1;
       next;
     }
-    elsif( $FOREGROUND{ $attr } ){
+    elsif( __is_foreground($attr) ){
       $fg = $i;
     }
-    elsif( $BACKGROUND{ $attr } ){
+    elsif( __is_background($attr) ){
       $bg = $i;
     }
     push @attr, $attr;
@@ -504,6 +547,7 @@ that in some instances you'd like to preserve.
 This module is essentially the inverse of L<Term::ANSIColor>.
 The array refs returned from L</parse>
 can be passed back in to C<Term::ANSIColor::colored>.
+(True color attributes require L<Term::ANSIColor> 5.01 or later.)
 The strings may not match exactly due to different ways the attributes can be specified,
 but the end result should be colored the same.
 
