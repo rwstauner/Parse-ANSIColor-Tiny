@@ -8,7 +8,7 @@ Parse::ANSIColor::Tiny - Determine attributes of ANSI-Colored string
 
 # VERSION
 
-version 0.700
+version 0.800
 
 # SYNOPSIS
 
@@ -18,13 +18,14 @@ version 0.700
     my $ansi = Parse::ANSIColor::Tiny->new();
     my $marked = $ansi->parse($output);
 
-    is_deeply
+    is_deeply(
       $marked,
       [
         [ [], 'foo' ],
         [ ['red'], 'bar' ],
       ],
-      'parse colored string';
+      'parse colored string'
+    );
 
     # don't forget to html-encode the string!
     my $html = join '',
@@ -47,6 +48,7 @@ that in some instances you'd like to preserve.
 This module is essentially the inverse of [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor).
 The array refs returned from ["parse"](#parse)
 can be passed back in to `Term::ANSIColor::colored`.
+(True color attributes require [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor) 5.01 or later.)
 The strings may not match exactly due to different ways the attributes can be specified,
 but the end result should be colored the same.
 
@@ -85,12 +87,18 @@ Returns a list of the foreground colors (in numeric escape sequence order).
 This includes the base colors, their `bright_` variants,
 and the names from the 256 palette (prefixes of `ansi`, `rgb`, and `grey`).
 
+The true color names (`r_R_g_G_b_B_`) are not included;
+there are too many of them to enumerate.
+
 ## background\_colors
 
 Returns a list of the background colors (in numeric escape sequence order).
 
 This includes the `on_` and `on_bright_` variants of the base colors
 and the `on_` names for the 256 palette.
+
+The true color names (`on_r_R_g_G_b_B_`) are not included;
+there are too many of them to enumerate.
 
 ## identify
 
@@ -108,6 +116,17 @@ Unknown codes will be ignored (remove from the output):
     $parser->identify('33', '52');
     # returns ('yellow') # drops the '52'
 
+True color (24-bit) sequences are named the way [Term::ANSIColor](https://metacpan.org/pod/Term%3A%3AANSIColor) names them:
+
+    $parser->identify('38;2;255;136;0');
+    # returns ('r255g136b0')
+
+    $parser->identify('48;2;0;10;20');
+    # returns ('on_r0g10b20')
+
+A true color sequence with a component greater than 255 isn't a color,
+so it is dropped like any other unknown code.
+
 ## normalize
 
     my @norm = $parser->normalize(@attributes);
@@ -119,6 +138,7 @@ and reduces the list to only those that would have effect.
 - Duplicates will be removed
 - a foreground color will overwrite any previous foreground color (and the previous ones will be removed)
 - same for background colors
+- true color attributes count as foreground/background colors just like the named ones do
 - `clear` will remove all previous attributes
 
     my @norm = $parser->normalize(qw(red bold green));
@@ -257,7 +277,7 @@ Randy Stauner <rwstauner@cpan.org>
 # CONTRIBUTORS
 
 - Dmitry Fedin <dmitry.fedin@gmail.com>
-- Randy Stauner <randy@r4s6.net>
+- Ricardo Signes <rjbs@semiotic.systems>
 
 # COPYRIGHT AND LICENSE
 
