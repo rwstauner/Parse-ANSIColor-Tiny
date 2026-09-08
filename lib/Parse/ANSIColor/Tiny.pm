@@ -518,13 +518,14 @@ sub h { shift };
   my $ansi = Parse::ANSIColor::Tiny->new();
   my $marked = $ansi->parse($output);
 
-  is_deeply
+  is_deeply(
     $marked,
     [
       [ [], 'foo' ],
       [ ['red'], 'bar' ],
     ],
-    'parse colored string';
+    'parse colored string'
+  );
 
   # don't forget to html-encode the string!
   my $html = join '',
